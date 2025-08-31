@@ -53,6 +53,7 @@ import React, { useState } from "react";
 import { HoveredLink, Menu, MenuItem} from "./ui/navbar-menu";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+ 
 
 
  function NavbarDemo() {
@@ -128,7 +129,7 @@ function Navbar({ className }: { className?: string }) {
            <MenuItem setActive={setActive} active={active} item="About Us">  
            </MenuItem>
            </Link>
-         <Link href={"/how-it-works"}>
+         <Link href={"/howitworks"}>
            <MenuItem setActive={setActive} active={active} item=" How it works">  
            </MenuItem>
            </Link>
