@@ -1,10 +1,10 @@
 // src/dbConfig/dbconfig.ts
 import mongoose from 'mongoose';
-const MONGODB_URI="mongodb://localhost:27017/medeaseNext"
+//const MONGODB_URI="mongodb://localhost:27017/medeaseNextjs"
 export async function connectToDatabase() {
   try {
-    //const uri = process.env.MONGODB_URI;
-    const uri =  MONGODB_URI;
+    const uri = process.env.MONGODB_URI;
+   // const uri =  MONGODB_URI;
     if (!uri) {
       throw new Error('MONGODB_URI is not defined in environment variables');
     }

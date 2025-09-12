@@ -15,7 +15,7 @@ import Footer from "@/components/footer";
  
 export default function Home() {
   return (
-  <div className="flex flex-col items-center justify-center min-h-screen  "> 
+  <div className="flex flex-col items-center justify-center min-h-screen overflow-x-hidden w-full "> 
    <NavbarDemo /> 
     <HeroSectionOne />
     <FeaturesSectionDemo />

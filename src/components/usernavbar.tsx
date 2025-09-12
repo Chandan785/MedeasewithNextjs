@@ -9,13 +9,25 @@ import {
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-// import { Button } from "./ui/moving-border";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
-// import { FileUpload } from "@/components/ui/file-upload";
-import { on } from "events";
+function SidebarDemo() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
 
+  const Logout = async () => {
+    try {
+      await axios.get("/api/users/logout");
+      toast.success("Logged out successfully");
+      router.push("/signup/user");
+    } catch (error: any) {
+      console.error(error.message);
+      toast.error("Logout failed, try again!");
+    }
+  };
 
-  function SidebarDemo() {
   const links = [
     {
       label: "Dashboard",
@@ -39,30 +51,41 @@ import { on } from "events";
       ),
     },
     {
-         
       label: "Logout",
-      href: "#",
+      onClick: Logout,
       icon: (
         <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
   ];
-  const [open, setOpen] = useState(false);
+
   return (
     <div
       className={cn(
-        "mx-auto flex w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-md border border-neutral-200 bg-gray-100 md:flex-row dark:border-neutral-700 dark:bg-neutral-800",
-        "h-[60vh]", // for your use case, use `h-screen` instead of `h-[60vh]`
+        "mx-auto flex w-full max-w-7xl flex-1 flex-col md:flex-row rounded-md border border-neutral-200 bg-gray-100 dark:border-neutral-700 dark:bg-neutral-800",
+        "h-screen" // full height
       )}
     >
+      {/* Sidebar */}
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+          <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {open ? <Logo /> : <LogoIcon />}
             <div className="mt-8 flex flex-col gap-2">
-              {links.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
+              {links.map((link, idx) =>
+                link.onClick ? (
+                  <button
+                    key={idx}
+                    onClick={link.onClick}
+                    className="flex items-center gap-2 px-0 py-2 rounded-md text-left text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:bg-red-100 dark:hover:bg-neutral-700"
+                  >
+                    {link.icon}
+                    {open && <span>{link.label}</span>}
+                  </button>
+                ) : (
+                  <SidebarLink key={idx} link={link} />
+                )
+              )}
             </div>
           </div>
           <div>
@@ -84,105 +107,228 @@ import { on } from "events";
           </div>
         </SidebarBody>
       </Sidebar>
-      <Dashboard />
+
+      {/* Dashboard */}
+      <div className="flex flex-1 overflow-y-auto">
+        <Dashboard />
+      </div>
     </div>
   );
 }
-export const Logo = () => {
-  return (
-    <a
-      href="#"
-      className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
+
+export const Logo = () => (
+  <a
+    href="#"
+    className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
+  >
+    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+    <motion.span
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="font-medium whitespace-pre text-black dark:text-white"
     >
-      <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="font-medium whitespace-pre text-black dark:text-white"
-      >
-        User Profile
-      </motion.span>
-    </a>
-  );
-};
-export const LogoIcon = () => {
-  return (
-    <a href="#"
-      className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
-    >
-      <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-    </a>
-  );
-};
+      User Profile
+    </motion.span>
+  </a>
+);
+
+export const LogoIcon = () => (
+  <a
+    href="#"
+    className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
+  >
+    <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+  </a>
+);
 
 // Dummy dashboard component with content
 const Dashboard = () => {
   return (
-    <div className="flex flex-1">
-      <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
-        
-         <div className=" w-full flex flex-1 flex-col items-center  gap-0">
-          <h1 className="text-xl w-auto font-bold text-black dark:text-white mb-4">
-            Welcome to the Dashboard
-          </h1>
+    <div className="flex flex-1 flex-col gap-4 rounded-tl-2xl border border-neutral-200 bg-white p-4 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
+      <h1 className="text-xl font-bold text-black dark:text-white mb-4">
+        Welcome to the Dashboard
+      </h1>
+
+      {/* Filter Form */}
+      <form className="w-full max-w-4xl bg-[#f5f8ff] dark:bg-neutral-900 p-6 rounded-md shadow-sm border border-gray-200 dark:border-neutral-700">
+        <h2 className="text-2xl font-bold text-blue-600 mb-4">
+          Filter Reports by Date
+        </h2>
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Start Date */}
+          <div className="flex flex-col">
+            <label
+              htmlFor="StartDate"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Start Date:
+            </label>
+            <input
+              type="date"
+              id="StartDate"
+              name="StartDate"
+              className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 
+                     bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-200 
+                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          {/* End Date */}
+          <div className="flex flex-col">
+            <label
+              htmlFor="EndDate"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              End Date:
+            </label>
+            <input
+              type="date"
+              id="EndDate"
+              name="EndDate"
+              className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 
+                     bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-200 
+                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          {/* Button */}
+          <button
+            type="submit"
+            className="px-6 py-2 mt-5 rounded-md font-semibold 
+                   bg-blue-600 text-white hover:bg-blue-700 
+                   shadow-md transition"
+          >
+            Filter
+          </button>
         </div>
-        
-        <form className="w-full max-w-4xl bg-[#f5f8ff] dark:bg-neutral-900 p-6 rounded-md shadow-sm border border-gray-200 dark:border-neutral-700">
-  <h2 className="text-2xl font-bold text-blue-600 mb-4">Filter Reports by Date</h2>
+      </form>
 
-  <div className="flex flex-wrap items-center gap-4">
-    {/* Start Date */}
-    <div className="flex flex-col">
-      <label htmlFor="StartDate" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        Start Date:
-      </label>
-      <input
-        type="date"
-        id="StartDate"
-        name="StartDate"
-        className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 
-                   bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-200 
-                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      />
-    </div>
+      {/* Available Reports */}
+      <div className="p-6 w-full overflow-x-auto">
+        <h2 className="text-2xl font-bold text-blue-600 mb-4">
+          Available Reports
+        </h2>
+        <div className="overflow-x-auto rounded-lg shadow">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-blue-600 text-white">
+                <th className="px-6 py-3 font-semibold">
+                  Date of Report Generation
+                </th>
+                <th className="px-6 py-3 font-semibold">Organization Name</th>
+                <th className="px-6 py-3 font-semibold">Report Type</th>
+                <th className="px-6 py-3 font-semibold">Download</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">28-08-2025</td>
+                <td className="px-6 py-3">Tech Corp</td>
+                <td className="px-6 py-3">Monthly Summary</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr>
 
-    {/* End Date */}
-    <div className="flex flex-col">
-      <label htmlFor="EndDate" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        End Date:
-      </label>
-      <input
-        type="date"
-        id="EndDate"
-        name="EndDate"
-        className="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 
-                   bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-200 
-                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      />
-    </div>
+              <tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">05-08-2025</td>
+                <td className="px-6 py-3">Tech Corp</td>
+                <td className="px-6 py-3">Monthly Summary</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr>
 
-    {/* Button */}
-    <button
-      type="submit"
-      className="px-6 py-2 mt-5 rounded-md font-semibold 
-                 bg-blue-600 text-white hover:bg-blue-700 
-                 shadow-md transition"
-    >
-      Filter
-    </button>
-  </div>
-</form>
-
-
-
-
-        {/* <Button
-        borderRadius="1.75rem"
-        className="bg-white dark:bg-slate-900 text-black dark:text-white border-neutral-200 dark:border-slate-800 "
-      >
-        Borders are cool  Welcome to the Dashboard
-      </Button> */}
-       
+              <tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">25-08-2025</td>
+                <td className="px-6 py-3">Health Org</td>
+                <td className="px-6 py-3">Annual Report</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr>
+              <tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">25-08-2025</td>
+                <td className="px-6 py-3">Health Org</td>
+                <td className="px-6 py-3">Annual Report</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr><tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">25-08-2025</td>
+                <td className="px-6 py-3">Health Org</td>
+                <td className="px-6 py-3">Annual Report</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr><tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">25-08-2025</td>
+                <td className="px-6 py-3">Health Org</td>
+                <td className="px-6 py-3">Annual Report</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr><tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">25-08-2025</td>
+                <td className="px-6 py-3">Health Org</td>
+                <td className="px-6 py-3">Annual Report</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr><tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">25-08-2025</td>
+                <td className="px-6 py-3">Health Org</td>
+                <td className="px-6 py-3">Annual Report</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr><tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">25-08-2025</td>
+                <td className="px-6 py-3">Health Org</td>
+                <td className="px-6 py-3">Annual Report</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr><tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">25-08-2025</td>
+                <td className="px-6 py-3">Health Org</td>
+                <td className="px-6 py-3">Annual Report</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr><tr className="border-b hover:bg-gray-50 dark:hover:bg-neutral-700">
+                <td className="px-6 py-3">25-08-2025</td>
+                <td className="px-6 py-3">Health Org</td>
+                <td className="px-6 py-3">Annual Report</td>
+                <td className="px-6 py-3">
+                  <button className="px-4 py-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition">
+                    Download
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

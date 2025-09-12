@@ -26,7 +26,7 @@ function SignupFormDemo() {
     try {
       const response = await axios.post("/api/users/signup", user);
       console.log("Signup Success", response.data);
-      router.push("/login/user");
+      router.push("/profile/userprofile");
     } catch (error: any) {
       console.log("Signup Error:", error.message);
     }

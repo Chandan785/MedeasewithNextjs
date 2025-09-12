@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -26,7 +27,7 @@ function LoginFormDemo() {
       console.log("Login Success", response.data);
       toast.success("Login Successful");
 
-      router.push("/userprofile");  // ✅ navigate after login
+      router.push("/profile/userprofile");  // ✅ navigate after login
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.log("Login Error:", error.message);
@@ -71,7 +72,7 @@ function LoginFormDemo() {
           <Label htmlFor="email">Email Address</Label>
           <Input
             id="email"
-            placeholder="projectmayhem@fc.com"
+            placeholder="medease123@gmail.com"
             type="email"
             value={user.email}
             onChange={(e) => setUser({ ...user, email: e.target.value })}
