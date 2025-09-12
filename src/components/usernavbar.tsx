@@ -12,10 +12,42 @@ import { cn } from "@/lib/utils";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { set } from "mongoose";
+ 
+
 
 function SidebarDemo() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [data, setData] = useState(null);
+
+  // const Profile = async () => {
+  //   try {
+  //      const res = await axios.get("/api/users/me");
+  //      console.log(res.data);
+  //      setData(res.data.user._id);
+  //       router.push(`/basicinfo/user/${res.data.user._id}`);
+
+  //   } catch (error: any) {
+  //     console.error(error.message);
+  //     toast.error("Navigation to profile failed, try again!");
+  //   }
+  // };
+
+  // Inside SidebarDemo
+const Profile = async () => {
+  try {
+    const res = await axios.get("/api/users/me");
+    const user = res.data.user;
+
+    // Push with query string
+    router.push(`/basicinfo/user/${user._id}?name=${user.Username}&email=${user.email}`);
+  } catch (error: any) {
+    console.error(error.message);
+    toast.error("Navigation to profile failed, try again!");
+  }
+};
+
 
   const Logout = async () => {
     try {
@@ -38,7 +70,7 @@ function SidebarDemo() {
     },
     {
       label: "Profile",
-      href: "#",
+      onClick: Profile ,
       icon: (
         <IconUserBolt className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
@@ -95,7 +127,7 @@ function SidebarDemo() {
                 href: "#",
                 icon: (
                   <img
-                    src="download.png"
+                    src="https://lh3.googleusercontent.com/pw/AP1GczPGxnuzm0oMBe-4i4mc9-1XAiPNHja6Yd0CzW5q6zAFQK-D1k_JD4ho7XURmN6CbX_gWiRWRlIXGk62lkVLIAuVgCQXtsyB50gj1Ih3ssttiYgCksE6mp7d7LjNhIuOKDo-3DZJ5emygRO_Ltgg_htX=w685-h913-s-no-gm?authuser=0"
                     className="h-7 w-7 shrink-0 rounded-full"
                     width={50}
                     height={50}

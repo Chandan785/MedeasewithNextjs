@@ -1,7 +1,7 @@
 // src/dbConfig/dbconfig.ts
 import mongoose from 'mongoose';
 //const MONGODB_URI="mongodb://localhost:27017/medeaseNextjs"
-export async function connectToDatabase() {
+async function connectToDatabase() {
   try {
     const uri = process.env.MONGODB_URI;
    // const uri =  MONGODB_URI;
@@ -27,3 +27,6 @@ export async function connectToDatabase() {
     throw error;
   }
 }
+
+export { connectToDatabase};
+export default connectToDatabase;
